@@ -16,42 +16,54 @@ Se desea comprobar que tras la ejecución la cuenta tiene exactamente 100 euros,
 '''
 
 import unittest
-import threading
-import time
 from multiprocessing import Pool
 
+
+
 class CuentaBancaria:
-    def __init__(self):
-        self.saldo = 100
+    def __init__(self, cantidad):
+        self.cantidad = cantidad
 
     def ingresar(self, cantidad):
-        self.saldo += cantidad
+        self.cantidad += cantidad
 
     def retirar(self, cantidad):
-        self.saldo -= cantidad
+        self.cantidad -= cantidad
 
-    def getSaldo(self):
-        return self.saldo
+    def get_cantidad(self):
+        return self.cantidad
 
 class TestCuentaBancaria(unittest.TestCase):
-    def test_cuenta(self):
-        cuenta = CuentaBancaria()
-        self.assertEqual(cuenta.getSaldo(), 100)
+    def setUp(self):
+        self.cuenta = CuentaBancaria(100)
 
-        def ingreso(cantidad):
-            cuenta.ingresar(cantidad)
+    def test_ingresar(self):
+        self.cuenta.ingresar(100)
+        self.assertEqual(self.cuenta.get_cantidad(), 200)
 
-        def retiro(cantidad):
-            cuenta.retirar(cantidad)
+    def test_retirar(self):
+        self.cuenta.retirar(100)
+        self.assertEqual(self.cuenta.get_cantidad(), 0)
 
-        pool = Pool(10)
-        pool.map(ingreso, [100, 50, 20])
-        pool.map(retiro, [100, 50, 20])
-        pool.close()
-        pool.join()
+    def test_ingresar_y_retirar(self):
+        self.cuenta.ingresar(100)
+        self.cuenta.retirar(100)
+        self.assertEqual(self.cuenta.get_cantidad(), 100)
 
-        self.assertEqual(cuenta.getSaldo(), 100)
+    def test_ingresar_y_retirar_multiprocesos(self):
+        pool = Pool(processes=4)
+        pool.map(self.cuenta.ingresar, [100, 50, 20])
+        pool.map(self.cuenta.retirar, [100, 50, 20])
+        self.assertEqual(self.cuenta.get_cantidad(), 100)
+
+    def test_ingresar_y_retirar_multiprocesos(self):
+        pool = Pool(processes=4)
+        pool.map(self.cuenta.ingresar, [100, 50, 20])
+        pool.map(self.cuenta.retirar, [100, 50, 20])
+        self.assertEqual(self.cuenta.get_cantidad(), 100)
+
+
 
 if __name__ == '__main__':
     unittest.main()
-    
+
