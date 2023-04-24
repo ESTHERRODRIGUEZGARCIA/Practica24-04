@@ -112,23 +112,23 @@ def main():
         jugadores.append(JugadorParImpar("Jugador " + str(i), 1000))
     for i in range(4):
         jugadores.append(JugadorMartingala("Jugador " + str(i), 1000))
-    while True:
+    
+    while banca.get_dinero() > 0:
         ruleta.lanzar()
-        if ruleta.get_numero() == 0:
-            for jugador in jugadores:
-                banca.incrementar_dinero(jugador.get_dinero())
-                jugador.decrementar_dinero(jugador.get_dinero())
-        else:
+        if ruleta.get_numero() != 0:
             for jugador in jugadores:
                 jugador.jugar(ruleta)
                 if jugador.get_dinero() < 0:
                     banca.incrementar_dinero(-jugador.get_dinero())
-                    jugador.decrementar_dinero(-jugador.get_dinero())
-        if banca.get_dinero() == 0:
+                    jugador.incrementar_dinero(jugador.get_dinero())
+        else:
             break
-    print("La banca se ha quedado sin dinero")
 
+    for jugador in jugadores:
+        print(jugador.get_nombre() + ": " + str(jugador.get_dinero()))
+    print("Banca: " + str(banca.get_dinero()))
     
+
 
 if __name__ == "__main__":
     main()
