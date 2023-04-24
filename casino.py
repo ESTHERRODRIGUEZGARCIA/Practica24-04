@@ -48,6 +48,7 @@ class Banca:
         self.dinero -= cantidad
 
 class Jugador: #se crea el jugador
+
     def __init__(self, nombre, dinero):
         self.nombre = nombre
         self.dinero = dinero
@@ -63,6 +64,8 @@ class Jugador: #se crea el jugador
 
     def decrementar_dinero(self, cantidad):
         self.dinero -= cantidad
+
+
 
 class JugadorNumero(Jugador): #se crea el jugador numero i
     def __init__(self, nombre, dinero):
