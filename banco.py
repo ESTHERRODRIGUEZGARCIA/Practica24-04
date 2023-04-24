@@ -18,6 +18,7 @@ Se desea comprobar que tras la ejecución la cuenta tiene exactamente 100 euros,
 import unittest
 import threading
 import time
+from multiprocessing import Pool
 
 class CuentaBancaria:
     def __init__(self):
@@ -35,35 +36,22 @@ class CuentaBancaria:
 class TestCuentaBancaria(unittest.TestCase):
     def test_cuenta(self):
         cuenta = CuentaBancaria()
-        hilos = []
-        for i in range(40):
-            hilo = threading.Thread(target=cuenta.ingresar, args=(100,))
-            hilos.append(hilo)
-            hilo.start()
-        for i in range(20):
-            hilo = threading.Thread(target=cuenta.ingresar, args=(50,))
-            hilos.append(hilo)
-            hilo.start()
-        for i in range(60):
-            hilo = threading.Thread(target=cuenta.ingresar, args=(20,))
-            hilos.append(hilo)
-            hilo.start()
-        for i in range(40):
-            hilo = threading.Thread(target=cuenta.retirar, args=(100,))
-            hilos.append(hilo)
-            hilo.start()
-        for i in range(20):
-            hilo = threading.Thread(target=cuenta.retirar, args=(50,))
-            hilos.append(hilo)
-            hilo.start()
-        for i in range(60):
-            hilo = threading.Thread(target=cuenta.retirar, args=(20,))
-            hilos.append(hilo)
-            hilo.start()
-        for hilo in hilos:
-            hilo.join()
+        self.assertEqual(cuenta.getSaldo(), 100)
+
+        def ingreso(cantidad):
+            cuenta.ingresar(cantidad)
+
+        def retiro(cantidad):
+            cuenta.retirar(cantidad)
+
+        pool = Pool(10)
+        pool.map(ingreso, [100, 50, 20])
+        pool.map(retiro, [100, 50, 20])
+        pool.close()
+        pool.join()
+
         self.assertEqual(cuenta.getSaldo(), 100)
 
 if __name__ == '__main__':
     unittest.main()
-
+    
