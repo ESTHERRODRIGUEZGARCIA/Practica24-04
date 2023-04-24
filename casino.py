@@ -23,7 +23,7 @@ import random
 import time
 
 
-class Ruleta:
+class Ruleta: # singleton
     def __init__(self):
         self.numero = 0
 
@@ -47,7 +47,7 @@ class Banca:
     def decrementar_dinero(self, cantidad):
         self.dinero -= cantidad
 
-class Jugador:
+class Jugador: #se crea el jugador
     def __init__(self, nombre, dinero):
         self.nombre = nombre
         self.dinero = dinero
@@ -64,7 +64,7 @@ class Jugador:
     def decrementar_dinero(self, cantidad):
         self.dinero -= cantidad
 
-class JugadorNumero(Jugador):
+class JugadorNumero(Jugador): #se crea el jugador numero i
     def __init__(self, nombre, dinero):
         super().__init__(nombre, dinero)
 
@@ -89,9 +89,9 @@ class JugadorParImpar(Jugador):
                 self.incrementar_dinero(20)
 
 class JugadorMartingala(Jugador):
-    def __init__(self, nombre, dinero):
-        super().__init__(nombre, dinero)
-        self.apuesta = 10
+    def __init__(self, nombre, dinero): #se crea el jugador martingala
+        super().__init__(nombre, dinero) #se llama al constructor de la clase padre
+        self.apuesta = 10 #se crea la apuesta
 
     def jugar(self, ruleta):
         numero = random.randint(1, 36)
@@ -102,7 +102,7 @@ class JugadorMartingala(Jugador):
         else:
             self.apuesta *= 2
 
-def main():
+def main(): #se crea la ruleta, la banca y los jugadores
     ruleta = Ruleta()
     banca = Banca()
     jugadores = []
@@ -113,23 +113,22 @@ def main():
     for i in range(4):
         jugadores.append(JugadorMartingala("Jugador " + str(i), 1000))
 
-    while banca.get_dinero() > 0:
+    while banca.get_dinero() > 0: #se crea el bucle para que la banca no se quede sin dinero
         ruleta.lanzar()
-        if ruleta.get_numero() != 0:
-            for jugador in jugadores:
+        if ruleta.get_numero() != 0: #si sale el 0, todos los jugadores pierden
+            for jugador in jugadores: #se crea el bucle para que los jugadores jueguen
                 jugador.jugar(ruleta)
-                if jugador.get_dinero() < 0:
-                    banca.incrementar_dinero(-jugador.get_dinero())
-                    jugador.incrementar_dinero(jugador.get_dinero())
+                if jugador.get_dinero() < 0: #si el jugador pierde, la banca gana
+                    banca.incrementar_dinero(-jugador.get_dinero()) #se le resta el dinero al jugador
+                    jugador.incrementar_dinero(jugador.get_dinero()) #se le suma el dinero al jugador
         else:
-            break
+            break #si sale el 0, se acaba el juego
 
-    for jugador in jugadores:
-        print(jugador.get_nombre() + ": " + str(jugador.get_dinero()))
-        print("Apuesta: " + str(jugador.get_dinero() - 1000))
+    for jugador in jugadores: #se crea el bucle para que se muestre el dinero de cada jugador
+        print(jugador.get_nombre() + ": " + str(jugador.get_dinero())) #se muestra el dinero de cada jugador
+        print("Apuesta: " + str(jugador.get_dinero() - 1000)) #se muestra la apuesta de cada jugador
 
-    print("Banca: " + str(banca.get_dinero()))
-
+    print("Banca: " + str(banca.get_dinero())) #se muestra el dinero de la banca
 
 
 if __name__ == "__main__":
